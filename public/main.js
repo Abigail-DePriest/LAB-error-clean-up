@@ -26,83 +26,12 @@ const houses = [
 const students = [];
 const voldysArmy = []; // starts as an empty array
 
-const events = () => {
-  // get form on the DOM on button click
-  document.querySelector('#start-sorting').addEventListener('click', () => {
-    // put html elements on the DOM on click
-
-    // form
-    // students and voldy's army divs
-  });
-
-  // always load last
-
-  // target expel buttons to move to voldys army
-  document
-    .querySelector('#student-container')
-    .addEventListener('click', (e) => {
-      if (e.target.id.includes('expel')) {
-        const [, id] = e.target.id.split('--');
-        const index = students.findIndex((student) => student.id === Number(id));
-
-        // move from one array to another
-        voldysArmy.push(...students.splice(index, 1));
-        // get both sets of students on the DOM
-      }
-    });
-};
-
-events();
 // target filter buttons on Dom
 
 const renderToDOM = (divId, content) => {
   const selectedDiv = document.querySelector(divId);
   selectedDiv.innerHTML = content;
 };
-// ********** HTML Components  ********** //
-// the basic HMTL structure of app
-const htmlStructure = () => {
-  const domString = `
-  <div id="header-container" class="header mb-3"></div>
-  <div id="form-container" class="container mb-3 text-center"></div>
-  <div id="filter-container" class="container mb-3"></div>
-  <div id="student-container" class="container d-flex"></div>
-  `;
-
-  renderToDOM('#app', domString);
-};
-htmlStructure(); // always load first
-
-const header = () => {
-  const domString = `<div class="container">
-  <h1>Welcome to Hoggy Hogwarts Sorting Hat!</h1>
-  <p>
-    Hmm, difficult. VERY difficult. <br />Plenty of courage, I see.
-    <br />Not a bad mind, either. There's talent, oh yes. <br />And a
-    thirst to prove yourself. <br />But where to put you?
-  </p>
-</div>`;
-
-  renderToDOM('#header-container', domString);
-};
-
-header();
-
-const startSortingBtn = () => {
-  const domString = '<button type="button" class="btn btn-info" id="start-sorting">Start the Sorting Ceremony!</button>';
-
-  renderToDOM('#form-container', domString);
-};
-
-startSortingBtn();
-
-const studentAreas = () => {
-  const domString = `<div id="students">No Students</div>
-<div id="voldy">No Death Eaters</div>`;
-
-  renderToDOM('#student-container', domString);
-};
-studentAreas();
 
 const studentsOnDom = (divId, array, house = 'Hogwarts') => {
   let domString = '';
@@ -131,9 +60,46 @@ const studentsOnDom = (divId, array, house = 'Hogwarts') => {
   });
   renderToDOM(divId, domString);
 };
+// ********** HTML Components  ********** //
+// the basic HMTL structure of app
+const htmlStructure = () => {
+  const domString = `
+  <div id="header-container" class="header mb-3"></div>
+  <div id="form-container" class="container mb-3 text-center"></div>
+  <div id="filter-container" class="container mb-3"></div>
+  <div id="student-container" class="container d-flex"></div>
+  `;
 
-studentsOnDom('#students', students);
-studentsOnDom('#voldy', voldysArmy);
+  renderToDOM('#app', domString);
+};
+
+const header = () => {
+  const domString = `<div class="container">
+  <h1>Welcome to Hoggy Hogwarts Sorting Hat!</h1>
+  <p>
+    Hmm, difficult. VERY difficult. <br />Plenty of courage, I see.
+    <br />Not a bad mind, either. There's talent, oh yes. <br />And a
+    thirst to prove yourself. <br />But where to put you?
+  </p>
+</div>`;
+
+  renderToDOM('#header-container', domString);
+};
+
+// filter buttons
+
+const startSortingBtn = () => {
+  const domString = '<button type="button" class="btn btn-info" id="start-sorting">Start the Sorting Ceremony!</button>';
+
+  renderToDOM('#form-container', domString);
+};
+
+const studentAreas = () => {
+  const domString = `<div id="students">No Students</div>
+<div id="voldy">No Death Eaters</div>`;
+
+  renderToDOM('#student-container', domString);
+};
 
 const filterBtnRow = () => {
   const domString = `<div class="btn-group" role="group" aria-label="Basic example">
@@ -145,20 +111,6 @@ const filterBtnRow = () => {
     </div>`;
   renderToDOM('#filter-container', domString);
 };
-
-filterBtnRow(); // filter buttons
-
-document.querySelector('#filter-container').addEventListener('click', (e) => {
-  if (e.target.id.includes('filter')) {
-    const [, house] = e.target.id.split('--');
-    if (house === 'all') {
-      studentsOnDom('#students', students);
-    } else if (house) {
-      const filter = students.filter((student) => student.house === house);
-      studentsOnDom('#students', filter, house);
-    }
-  }
-});
 
 // ********** LOGIC  ********** //
 // sorts student to a house and then place them in the students array
@@ -214,7 +166,48 @@ const form = () => {
   document.querySelector('#sorting').addEventListener('submit', sortStudent);
 };
 
-form();
+const events = () => {
+  // get form on the DOM on button click
+  document.querySelector('#start-sorting').addEventListener('click', () => {
+    form();
+    filterBtnRow();
+    studentAreas();
+    // put html elements on the DOM on click
+
+    // form
+    // students and voldy's army divs
+  });
+
+  // always load last
+
+  // target expel buttons to move to voldys army
+  document
+    .querySelector('#student-container')
+    .addEventListener('click', (e) => {
+      if (e.target.id.includes('expel')) {
+        const [, id] = e.target.id.split('--');
+        const index = students.findIndex((student) => student.id === Number(id));
+
+        // move from one array to another
+        voldysArmy.push(...students.splice(index, 1));
+        // get both sets of students on the DOM
+        studentsOnDom('#students', students);
+        studentsOnDom('#voldy', voldysArmy);
+      }
+    });
+
+  document.querySelector('#filter-container').addEventListener('click', (e) => {
+    if (e.target.id.includes('filter')) {
+      const [, house] = e.target.id.split('--');
+      if (house === 'all') {
+        studentsOnDom('#students', students);
+      } else if (house) {
+        const filter = students.filter((student) => student.house === house);
+        studentsOnDom('#students', filter, house);
+      }
+    }
+  });
+};
 
 const startApp = () => {
   htmlStructure(); // always load first
